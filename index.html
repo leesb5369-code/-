@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>대한민국 건설사 도급 순위 300위표</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: '맑은 고딕', 'Malgun Gothic', '나눔고딕', sans-serif;
+      background: #f4f6f9;
+      color: #222;
+      padding: 24px 16px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    header h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #1a3a5c;
+      border-bottom: 3px solid #1a3a5c;
+      display: inline-block;
+      padding-bottom: 6px;
+    }
+    header p.subtitle {
+      font-size: 0.82rem;
+      color: #666;
+      margin-top: 8px;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+    .toolbar input[type="text"] {
+      padding: 7px 12px;
+      border: 1px solid #ccd3dc;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      width: 280px;
+      outline: none;
+    }
+    .toolbar input[type="text"]:focus { border-color: #1a3a5c; }
+    .toolbar button {
+      padding: 7px 18px;
+      background: #1a3a5c;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.88rem;
+      cursor: pointer;
+    }
+    .toolbar button:hover { background: #26527e; }
+    .count-label {
+      margin-left: auto;
+      font-size: 0.82rem;
+      color: #555;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.09);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 900px;
+      font-size: 0.86rem;
+    }
+
+    thead th {
+      background: #1a3a5c;
+      color: #fff;
+      padding: 11px 10px;
+      text-align: center;
+      white-space: nowrap;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      border-right: 1px solid #2a4f7a;
+    }
+    thead th:last-child { border-right: none; }
+
+    tbody tr { border-bottom: 1px solid #e8ecf1; }
+    tbody tr:nth-child(even) { background: #f7f9fc; }
+    tbody tr:hover { background: #eaf2fb; }
+
+    td {
+      padding: 9px 10px;
+      vertical-align: middle;
+      border-right: 1px solid #e8ecf1;
+    }
+    td:last-child { border-right: none; }
+
+    td.rank { text-align: center; font-weight: 700; color: #1a3a5c; width: 54px; }
+    td.company { font-weight: 600; }
+    td.rep { text-align: center; width: 90px; }
+    td.tel { text-align: center; white-space: nowrap; width: 130px; }
+    td.limit { text-align: right; white-space: nowrap; width: 140px; }
+    td.guarantee { text-align: center; width: 90px; }
+    td.note { text-align: center; color: #888; width: 80px; }
+
+    td.rank.top3 { color: #c0392b; font-size: 1rem; }
+    td.rank.top10 { color: #e67e22; }
+
+    tfoot td {
+      background: #eef2f7;
+      padding: 8px 10px;
+      font-size: 0.78rem;
+      color: #777;
+      text-align: center;
+    }
+
+    .hidden-row { display: none; }
+
+    @media print {
+      body { background: #fff; padding: 0; }
+      .toolbar { display: none; }
+      .table-wrap { box-shadow: none; }
+      thead th { background: #333 !important; -webkit-print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>대한민국 건설사 도급 순위 300위표</h1>
+  <p class="subtitle">※ 본 자료는 참고용이며, 정확한 내용은 대한건설협회 및 국토교통부 공식 발표를 확인하시기 바랍니다.</p>
+</header>
+
+<div class="toolbar">
+  <input type="text" id="searchInput" placeholder="회사명·대표자·주소 검색…" oninput="filterTable()" />
+  <button onclick="window.print()">인쇄</button>
+  <span class="count-label" id="countLabel"></span>
+</div>
+
+<div class="table-wrap">
+  <table id="rankTable">
+    <thead>
+      <tr>
+        <th>순위</th>
+        <th>건설회사명</th>
+        <th>대표자</th>
+        <th>대표번호</th>
+        <th>주소</th>
+        <th>도급한도액</th>
+        <th>지급보증율</th>
+        <th>비고</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody">
+      <!-- 1~30위: 주요 대형 건설사 -->
+      <tr>
+        <td class="rank top3">1</td>
+        <td class="company">삼성물산(주) 건설부문</td>
+        <td class="rep">오세철</td>
+        <td class="tel">02-2145-2114</td>
+        <td>서울특별시 강남구 테헤란로 521</td>
+        <td class="limit">324,000억원</td>
+        <td class="guarantee">100%</td>
+        <td class="note"></td>
+      </tr>
+      <tr>
+        <td class="rank top3">2</td>
+        <td class="company">현대건설(주)</td>
+        <td class="rep">윤영준</td>
+        <td class="tel">02-746-1114</td>
+        <td>서울특별시 종로구 율곡로 75</td>
+        <td class="limit">298,000억원</td>
+        <td class="guarantee">100%</td>
+        <td class="note"></td>
+      </tr>
+      <tr>
+        <td class="rank top3">3</td>
+        <td class="company">대우건설(주)</td>
+        <td class="rep">정원주</td>
+        <td class="tel">02-2288-3114</td>
+        <td>서울특별시 중구 을지로 100</td>
+        <td class="limit">158,000억원</td>
+        <td class="guarantee">100%</td>
+        <td class="note"></td>
+      </tr>
+      <tr>
+        <td class="rank top10">4</td>
+        <td class="company">GS건설(주)</td>
+        <td class="rep">허윤홍</td>
+        <td class="tel">02-2154-1114</td>
+        <td>서울특별시 종로구 종로 33</td>
+        <td class="limit">152,000억원</td>
+        <td class="guarantee">100%</td>
+        <td class="note"></td>
+      </tr>
+      <tr>
+        <td class="rank top10">5</td>
+        <td class="company">포스코이앤씨(주)</td>
+        <td class="rep">한성희</td>
+        <td class="tel">054-220-0114</td>
+        <td>경상북도 포항시 남구 동해안로 6261</td>
+        <td class="limit">148,000억원</td>
+        <td class="guarantee">100%</td>
+        <td class="note"></td>
+      </tr>
+      <tr>
+        <td class="rank top10">6</td>
+        <td class="company">DL이앤씨(주)</td>
+        <td class="rep">마창민</td>
+        <td class="tel">02-726-4114</td>
+        <td>서울특별시 종로구 종로 1</td>
+        <td class="limit">140,000억원</td>
+        <td class="guarantee">100%</td>
+        <td class="note"></td>
+      </tr>
+      <tr>
+        <td class="rank top10">7</td>
+        <td class="company">롯데건설(주)</td>
+        <td class="rep">박현철</td>
+        <td class="tel">02-3708-9000</td>
+        <td>서울특별시 송파구 올림픽로 269</td>
+        <td class="limit">132,000억원</td>
+        <td class="guarantee">100%</td>
+        <td class="note"></td>
+      </tr>
+      <tr>
+        <td class="rank top10">8</td>
+        <td class="company">현대엔지니어링(주)</td>
+        <td class="rep">홍현성</td>
+        <td class="tel">02-2166-6000</td>
+        <td>서울특별시 종로구 종로 33</td>
+        <td class="limit">120,000억원</td>
+        <td class="guarantee">100%</td>
+        <td class="note"></td>
+      </tr>
+      <tr>
+        <td class="rank top10">9</td>
+        <td class="company">SK에코플랜트(주)</td>
+        <td class="rep">박경일</td>
+        <td class="tel">02-2121-5114</td>
+        <td>서울특별시 종로구 종로 26</td>
+        <td class="limit">115,000억원</td>
+        <td class="guarantee">100%</td>
+        <td class="note"></td>
+      </tr>
+      <tr>
+        <td class="rank top10">10</td>
+        <td class="company">HDC현대산업개발(주)</td>
+        <td class="rep">최익훈</td>
+        <td class="tel">02-2008-4900</td>
+        <td>서울특별시 용산구 한강대로 72</td>
+        <td class="limit">108,000억원</td>
+        <td class="guarantee">100%</td>
+        <td class="note"></td>
+      </tr>
+      <tr>
+        <td class="rank">11</td>
+        <td class="company">한화건설(주)</td>
+        <td class="rep">김승모</td>
+        <td class="tel">02-729-3114</td>
+        <td>서울특별시 중구 청계천로 86</td>
+        <td class="limit">95,000억원</td>
+        <td class="guarantee">100%</td>
+        <td class="note"></td>
+      </tr>
+      <tr>
+        <td class="rank">12</td>
+        <td class="company">호반건설(주)</td>
+        <td class="rep">김대헌</td>
+        <td class="tel">062-600-2000</td>
+        <td>광주광역시 서구 천변우하로 400</td>
+        <td class="limit">88,000억원</td>
+        <td class="guarantee">100%</td>
+        <td class="note"></td>
+      </tr>
+      <tr>
+        <td class="rank">13</td>
+        <td class="company">태영건설(주)</td>
+        <td class="rep">윤석민</td>
+        <td class="tel">02-2090-3500</td>
+        <td>서울특별시 영등포구 여의대로 108</td>
+        <td class="limit">72,000억원</td>
+        <td class="guarantee">100%</td>
+        <td class="note"></td>
+      </tr>
+      <tr>
+        <td class="rank">14</td>
+        <td class="company">계룡건설산업(주)</td>
+        <td class="rep">이승찬</td>
+        <td class="tel">042-930-8000</td>
+        <td>대전광역시 유성구 계룡로 105</td>
+        <td class="limit">65,000억원</td>
+        <td class="guarantee">100%</td>
+        <td class="note"></td>
+      </tr>
+      <tr>
+        <td class="rank">15</td>
+        <td class="company">금호건설(주)</td>
+        <td class="rep">임병용</td>
+        <td class="tel">02-6303-3000</td>
+        <td>서울특별시 영등포구 국제금융로 10</td>
+        <td class="limit">62,000억원</td>
+        <td class="guarantee">100%</td>
+        <td class="note"></td>
+      </tr>
+      <tr>
+        <td class="rank">16</td>
+        <td class="company">코오롱글로벌(주)</td>
+        <td class="rep">김정일</td>
+        <td class="tel">031-287-3000</td>
+        <td>경기도 과천시 코오롱로 11</td>
+        <td class="limit">55,000억원</td>
+        <td class="guarantee">100%</td>
+        <td class="note"></td>
+      </tr>
+      <tr>
+        <td class="rank">17</td>
+        <td class="company">중흥건설(주)</td>
+        <td class="rep">정원주</td>
+        <td class="tel">062-940-7000</td>
+        <td>광주광역시 북구 첨단과기로 208번길 43</td>
+        <td class="limit">52,000억원</td>
+        <td class="guarantee">100%</td>
+        <td class="note"></td>
+      </tr>
+      <tr>
+        <td class="rank">18</td>
+        <td class="company">두산건설(주)</td>
+        <td class="rep">김진국</td>
+        <td class="tel">02-3398-6000</td>
+        <td>경기도 용인시 수지구 포은대로 388</td>
+        <td class="limit">48,000억원</td>
+        <td class="guarantee">100%</td>
+        <td class="note"></td>
+      </tr>
+      <tr>
+        <td class="rank">19</td>
+        <td class="company">신세계건설(주)</td>
+        <td class="rep">허병훈</td>
+        <td class="tel">02-727-1234</td>
+        <td>서울특별시 중구 소공로 63</td>
+        <td class="limit">45,000억원</td>
+        <td class="guarantee">100%</td>
+        <td class="note"></td>
+      </tr>
+      <tr>
+        <td class="rank">20</td>
+        <td class="company">KCC건설(주)</td>
+        <td class="rep">정몽진</td>
+        <td class="tel">02-3480-5000</td>
+        <td>서울특별시 서초구 반포대로 231</td>
+        <td class="limit">42,000억원</td>
+        <td class="guarantee">100%</td>
+        <td class="note"></td>
+      </tr>
+      <tr>
+        <td class="rank">21</td>
+        <td class="company">한신공영(주)</td>
+        <td class="rep">신한철</td>
+        <td class="tel">02-2253-8114</td>
+        <td>서울특별시 중구 을지로 16</td>
+        <td class="limit">40,000억원</td>
+        <td class="guarantee">100%</td>
+        <td class="note"></td>
+      </tr>
+      <tr>
+        <td class="rank">22</td>
+        <td class="company">쌍용건설(주)</td>
+        <td class="rep">박철</td>
+        <td class="tel">02-2270-6000</td>
+        <td>서울특별시 중구 서소문로 141</td>
+        <td class="limit">38,000억원</td>
+        <td class="guarantee">100%</td>
+        <td class="note"></td>
+      </tr>
+      <tr>
+        <td class="rank">23</td>
+        <td class="company">반도건설(주)</td>
+        <td class="rep">권홍사</td>
+        <td class="tel">032-320-3000</td>
+        <td>인천광역시 서구 청라커낼로 50</td>
+        <td class="limit">36,000억원</td>
+        <td class="guarantee">100%</td>
+        <td class="note"></td>
+      </tr>
+      <tr>
+        <td class="rank">24</td>
+        <td class="company">동부건설(주)</td>
+        <td class="rep">최준영</td>
+        <td class="tel">02-3484-9000</td>
+        <td>서울특별시 서초구 강남대로 지하 395</td>
+        <td class="limit">34,000억원</td>
+        <td class="guarantee">100%</td>
+        <td class="note"></td>
+      </tr>
+      <tr>
+        <td class="rank">25</td>
+        <td class="company">한라(주)</td>
+        <td class="rep">정몽원</td>
+        <td class="tel">02-2014-7000</td>
+        <td>서울특별시 강남구 테헤란로 322</td>
+        <td class="limit">33,000억원</td>
+        <td class="guarantee">100%</td>
+        <td class="note"></td>
+      </tr>
+      <tr>
+        <td class="rank">26</td>
+        <td class="company">우미건설(주)</td>
+        <td class="rep">이기평</td>
+        <td class="tel">041-620-7000</td>
+        <td>충청남도 천안시 서북구 불당26로 94</td>
+        <td class="limit">32,000억원</td>
+        <td class="guarantee">100%</td>
+        <td class="note"></td>
+      </tr>
+      <tr>
+        <td class="rank">27</td>
+        <td class="company">남광토건(주)</td>
+        <td class="rep">박인원</td>
+        <td class="tel">02-769-3000</td>
+        <td>서울특별시 강남구 영동대로 517</td>
+        <td class="limit">30,000억원</td>
+        <td class="guarantee">100%</td>
+        <td class="note"></td>
+      </tr>
+      <tr>
+        <td class="rank">28</td>
+        <td class="company">삼부토건(주)</td>
+        <td class="rep">신준호</td>
+        <td class="tel">02-3407-2000</td>
+        <td>서울특별시 강동구 상일로 6길 26</td>
+        <td class="limit">28,500억원</td>
+        <td class="guarantee">100%</td>
+        <td class="note"></td>
+      </tr>
+      <tr>
+        <td class="rank">29</td>
+        <td class="company">효성중공업(주)</td>
+        <td class="rep">조현상</td>
+        <td class="tel">02-707-7000</td>
+        <td>서울특별시 마포구 마포대로 119</td>
+        <td class="limit">27,000억원</td>
+        <td class="guarantee">100%</td>
+        <td class="note"></td>
+      </tr>
+      <tr>
+        <td class="rank">30</td>
+        <td class="company">경남기업(주)</td>
+        <td class="rep">성완종</td>
+        <td class="tel">02-3704-7000</td>
+        <td>서울특별시 강남구 봉은사로 524</td>
+        <td class="limit">26,000억원</td>
+        <td class="guarantee">100%</td>
+        <td class="note"></td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="8">※ 31위~300위 데이터는 아래 JavaScript에 의해 빈 행으로 자동 생성됩니다. 실제 데이터를 입력하여 사용하십시오.</td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
+<script>
+  /* ── 31~300위 빈 행 자동 생성 ── */
+  (function () {
+    const tbody = document.getElementById('tableBody');
+    for (let i = 31; i <= 300; i++) {
+      const rankClass = 'rank';
+      const tr = document.createElement('tr');
+      tr.innerHTML =
+        `<td class="${rankClass}">${i}</td>` +
+        `<td class="company"></td>` +
+        `<td class="rep"></td>` +
+        `<td class="tel"></td>` +
+        `<td></td>` +
+        `<td class="limit"></td>` +
+        `<td class="guarantee"></td>` +
+        `<td class="note"></td>`;
+      tbody.appendChild(tr);
+    }
+    updateCount();
+  })();
+
+  /* ── 검색 필터 ── */
+  function filterTable() {
+    const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
+    const rows = document.querySelectorAll('#tableBody tr');
+    rows.forEach(tr => {
+      const text = tr.textContent.toLowerCase();
+      tr.classList.toggle('hidden-row', keyword !== '' && !text.includes(keyword));
+    });
+    updateCount();
+  }
+
+  function updateCount() {
+    const total = document.querySelectorAll('#tableBody tr').length;
+    const visible = document.querySelectorAll('#tableBody tr:not(.hidden-row)').length;
+    const label = document.getElementById('countLabel');
+    label.textContent = `표시: ${visible} / 전체: ${total}개사`;
+  }
+</script>
+
+</body>
+</html>

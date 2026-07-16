@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>사자성어 추천기</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+    background: #f4f6fb;
+    color: #222;
+  }
+  header {
+    background: linear-gradient(135deg, #3a4a8f, #6c5ce7);
+    color: #fff;
+    padding: 40px 20px 32px;
+    text-align: center;
+  }
+  header h1 {
+    margin: 0 0 8px;
+    font-size: 1.9rem;
+    letter-spacing: 1px;
+  }
+  header p {
+    margin: 0;
+    font-size: 0.95rem;
+    opacity: 0.9;
+  }
+  .container {
+    max-width: 880px;
+    margin: -20px auto 60px;
+    padding: 0 20px;
+  }
+  .search-box {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    padding: 20px;
+  }
+  .search-row {
+    display: flex;
+    gap: 10px;
+  }
+  #query {
+    flex: 1;
+    padding: 12px 14px;
+    font-size: 1rem;
+    border: 2px solid #e1e4ee;
+    border-radius: 10px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  #query:focus { border-color: #6c5ce7; }
+  #searchBtn {
+    padding: 12px 22px;
+    font-size: 1rem;
+    background: #6c5ce7;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  #searchBtn:hover { background: #5a4bd1; }
+  .chips {
+    margin-top: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .chip {
+    background: #eef0fb;
+    color: #3a4a8f;
+    border: none;
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+  .chip:hover { background: #dde1f7; }
+  .status {
+    margin: 22px 4px 10px;
+    font-size: 0.9rem;
+    color: #666;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 18px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+    border-top: 4px solid #6c5ce7;
+  }
+  .card .hanja {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #2c3560;
+  }
+  .card .hangul {
+    font-size: 0.9rem;
+    color: #888;
+    margin-bottom: 8px;
+  }
+  .card .meaning {
+    font-size: 0.92rem;
+    line-height: 1.5;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  .card .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .tag {
+    font-size: 0.75rem;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: #f1f2f8;
+    color: #666;
+  }
+  .tag.matched {
+    background: #6c5ce7;
+    color: #fff;
+  }
+  .empty {
+    text-align: center;
+    color: #888;
+    padding: 40px 10px;
+    font-size: 0.95rem;
+  }
+  footer {
+    text-align: center;
+    color: #999;
+    font-size: 0.8rem;
+    padding-bottom: 30px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>사자성어 추천기</h1>
+  <p>지금 상황이나 감정, 키워드를 입력하면 어울리는 사자성어를 찾아드려요.</p>
+</header>
+
+<div class="container">
+  <div class="search-box">
+    <div class="search-row">
+      <input id="query" type="text" placeholder="예: 오랜 노력 끝에 성공했어요" autocomplete="off">
+      <button id="searchBtn" onclick="runSearch()">추천받기</button>
+    </div>
+    <div class="chips" id="chips"></div>
+  </div>
+
+  <div class="status" id="status"></div>
+  <div class="grid" id="results"></div>
+</div>
+
+<footer>사자성어 추천기 · 입력한 내용에 맞는 사자성어를 자동으로 찾아드립니다</footer>
+
+<script>
+const IDIOMS = [
+  { hanja: "刻舟求劍", hangul: "각주구검", meaning: "칼을 강물에 빠뜨린 자리를 배에 표시해두고 나중에 그 표시만 보고 칼을 찾으려 한다는 뜻으로, 상황이 변한 줄 모르고 옛 방식만 고집함을 이르는 말.", keywords: ["고집", "융통성", "미련함", "변화"] },
+  { hanja: "甘言利說", hangul: "감언이설", meaning: "달콤한 말과 이로운 조건을 내세워 남을 꾀는 말.", keywords: ["유혹", "거짓말", "사기", "속임수"] },
+  { hanja: "刻骨難忘", hangul: "각골난망", meaning: "입은 은혜가 뼈에 새겨질 정도로 커서 잊을 수 없음.", keywords: ["은혜", "감사", "고마움"] },
+  { hanja: "改過遷善", hangul: "개과천선", meaning: "지난날의 잘못을 고쳐 올바르고 착하게 됨.", keywords: ["반성", "변화", "갱생", "성장"] },
+  { hanja: "去頭截尾", hangul: "거두절미", meaning: "머리와 꼬리를 잘라낸다는 뜻으로, 앞뒤 설명 없이 요점만 말함.", keywords: ["요점", "간단히", "핵심"] },
+  { hanja: "隔世之感", hangul: "격세지감", meaning: "그리 오래되지 않은 동안에 세상이 몰라볼 정도로 변하여 딴 세상처럼 느껴짐.", keywords: ["세월", "변화", "놀람", "격차"] },
+  { hanja: "結草報恩", hangul: "결초보은", meaning: "죽은 뒤에라도 은혜를 잊지 않고 갚음.", keywords: ["은혜", "보답", "감사"] },
+  { hanja: "苦盡甘來", hangul: "고진감래", meaning: "쓴 것이 다하면 단 것이 온다는 뜻으로, 고생 끝에 즐거움이 옴.", keywords: ["노력", "인내", "성공", "고생"] },
+  { hanja: "過猶不及", hangul: "과유불급", meaning: "정도를 지나침은 미치지 못함과 같다는 뜻으로, 중용이 중요함을 이르는 말.", keywords: ["절제", "중용", "과함"] },
+  { hanja: "管鮑之交", hangul: "관포지교", meaning: "관중과 포숙의 사귐처럼 매우 친밀하고 두터운 우정.", keywords: ["우정", "신뢰", "친구"] },
+  { hanja: "刮目相對", hangul: "괄목상대", meaning: "눈을 비비고 다시 볼 정도로 상대방의 실력이나 발전이 놀랍게 늘어남.", keywords: ["발전", "성장", "실력", "놀람"] },
+  { hanja: "巧言令色", hangul: "교언영색", meaning: "듣기 좋게 꾸민 말과 아첨하는 낯빛.", keywords: ["아첨", "거짓", "위선"] },
+  { hanja: "九死一生", hangul: "구사일생", meaning: "여러 차례 죽을 고비를 넘기고 겨우 살아남.", keywords: ["위기", "생존", "고비"] },
+  { hanja: "勸善懲惡", hangul: "권선징악", meaning: "착한 일을 권장하고 악한 일을 벌함.", keywords: ["선악", "교훈", "권장"] },
+  { hanja: "錦上添花", hangul: "금상첨화", meaning: "비단 위에 꽃을 더한다는 뜻으로, 좋은 일에 좋은 일이 더해짐.", keywords: ["행운", "겹경사", "좋은일"] },
+  { hanja: "囊中之錐", hangul: "낭중지추", meaning: "주머니 속의 송곳처럼 뛰어난 재능은 저절로 드러남.", keywords: ["재능", "드러남", "능력"] },
+  { hanja: "勞心焦思", hangul: "노심초사", meaning: "마음을 쓰며 애를 태움.", keywords: ["걱정", "불안", "초조"] },
+  { hanja: "多多益善", hangul: "다다익선", meaning: "많으면 많을수록 더욱 좋음.", keywords: ["많을수록좋음", "풍족"] },
+  { hanja: "大器晩成", hangul: "대기만성", meaning: "큰 그릇은 늦게 이루어진다는 뜻으로, 크게 될 사람은 오랜 노력 끝에 성공함.", keywords: ["인내", "성공", "노력", "늦게"] },
+  { hanja: "同病相憐", hangul: "동병상련", meaning: "같은 병을 앓는 사람끼리 서로 가엾게 여긴다는 뜻으로, 비슷한 처지의 사람끼리 공감하고 위로함.", keywords: ["공감", "위로", "처지"] },
+  { hanja: "燈下不明", hangul: "등하불명", meaning: "등잔 밑이 어둡다는 뜻으로, 가까이 있는 것을 오히려 잘 모름.", keywords: ["실수", "무지", "가까움"] },
+  { hanja: "馬耳東風", hangul: "마이동풍", meaning: "말의 귀에 스치는 동풍이라는 뜻으로, 남의 말을 귀담아듣지 않고 흘려버림.", keywords: ["무관심", "무시", "충고"] },
+  { hanja: "亡羊補牢", hangul: "망양보뢰", meaning: "양을 잃고 나서 우리를 고친다는 뜻으로, 실패한 후에라도 대책을 세움.", keywords: ["대비", "반성", "뒤늦은대책"] },
+  { hanja: "明若觀火", hangul: "명약관화", meaning: "불을 보듯 분명하고 명백함.", keywords: ["명백함", "확실함"] },
+  { hanja: "目不忍見", hangul: "목불인견", meaning: "눈으로 차마 볼 수 없을 만큼 참혹한 상황.", keywords: ["참혹", "안타까움"] },
+  { hanja: "無我之境", hangul: "무아지경", meaning: "자신을 잊을 정도로 무언가에 깊이 몰입한 경지.", keywords: ["몰입", "집중", "열중"] },
+  { hanja: "反哺之孝", hangul: "반포지효", meaning: "까마귀 새끼가 자란 뒤 어미에게 먹이를 먹여 은혜를 갚듯이, 자식이 부모에게 효도함.", keywords: ["효도", "부모", "은혜"] },
+  { hanja: "百年偕老", hangul: "백년해로", meaning: "부부가 화락하게 함께 늙어감.", keywords: ["사랑", "결혼", "부부"] },
+  { hanja: "附和雷同", hangul: "부화뇌동", meaning: "자기 주관 없이 남의 의견에 무조건 따름.", keywords: ["줏대없음", "동조", "휩쓸림"] },
+  { hanja: "四面楚歌", hangul: "사면초가", meaning: "사방이 모두 적으로 둘러싸여 고립되고 도움받을 곳이 없는 상태.", keywords: ["위기", "고립", "곤경"] },
+  { hanja: "塞翁之馬", hangul: "새옹지마", meaning: "변방 노인의 말처럼 좋은 일과 나쁜 일은 예측할 수 없이 뒤바뀜.", keywords: ["인생무상", "화복", "예측불가"] },
+  { hanja: "雪上加霜", hangul: "설상가상", meaning: "눈 위에 서리까지 덮인다는 뜻으로, 어려운 일이 겹쳐서 일어남.", keywords: ["불운", "겹악재", "곤경"] },
+  { hanja: "小貪大失", hangul: "소탐대실", meaning: "작은 것을 탐하다가 큰 것을 잃음.", keywords: ["욕심", "손해", "후회"] },
+  { hanja: "手不釋卷", hangul: "수불석권", meaning: "손에서 책을 놓지 않을 정도로 열심히 공부함.", keywords: ["배움", "독서", "노력"] },
+  { hanja: "十匙一飯", hangul: "십시일반", meaning: "여러 사람이 한 술씩 보태면 한 사람 먹을 분량이 된다는 뜻으로, 여럿이 힘을 합해 돕는 일.", keywords: ["협동", "나눔", "도움"] },
+  { hanja: "眼下無人", hangul: "안하무인", meaning: "눈 아래에 사람이 없는 듯 몹시 거만함.", keywords: ["오만", "거만", "무례"] },
+  { hanja: "愛之重之", hangul: "애지중지", meaning: "매우 사랑하고 소중히 여김.", keywords: ["사랑", "소중함", "아낌"] },
+  { hanja: "漁夫之利", hangul: "어부지리", meaning: "둘이 다투는 틈에 제3자가 힘들이지 않고 이익을 봄.", keywords: ["이득", "어부지리", "기회"] },
+  { hanja: "言行一致", hangul: "언행일치", meaning: "말과 행동이 서로 같음.", keywords: ["신뢰", "정직", "일관성"] },
+  { hanja: "五里霧中", hangul: "오리무중", meaning: "짙은 안개 속에 있는 것처럼 일의 상황을 알 수 없음.", keywords: ["혼란", "막막함", "미궁"] },
+  { hanja: "溫故知新", hangul: "온고지신", meaning: "옛것을 익히고 그것을 미루어 새것을 앎.", keywords: ["배움", "전통", "복습"] },
+  { hanja: "愚公移山", hangul: "우공이산", meaning: "우공이 산을 옮긴다는 뜻으로, 꾸준히 노력하면 큰 일도 이룰 수 있음.", keywords: ["노력", "끈기", "꾸준함"] },
+  { hanja: "有備無患", hangul: "유비무환", meaning: "미리 준비가 되어 있으면 걱정할 것이 없음.", keywords: ["준비", "대비", "안심"] },
+  { hanja: "以心傳心", hangul: "이심전심", meaning: "마음과 마음으로 서로 뜻이 통함.", keywords: ["소통", "공감", "믿음"] },
+  { hanja: "因果應報", hangul: "인과응보", meaning: "원인에 따라 그에 맞는 결과가 반드시 따라옴.", keywords: ["인과", "업보", "결과"] },
+  { hanja: "一石二鳥", hangul: "일석이조", meaning: "돌 하나로 새 두 마리를 잡는다는 뜻으로, 한 가지 일로 두 가지 이익을 봄.", keywords: ["효율", "이득", "일거양득"] },
+  { hanja: "日就月將", hangul: "일취월장", meaning: "날마다 달마다 성장하고 발전함.", keywords: ["발전", "성장", "실력향상"] },
+  { hanja: "自業自得", hangul: "자업자득", meaning: "자기가 저지른 일의 결과를 자기가 받음.", keywords: ["업보", "책임", "자초"] },
+  { hanja: "自暴自棄", hangul: "자포자기", meaning: "절망에 빠져 스스로를 포기함.", keywords: ["포기", "절망", "좌절"] },
+  { hanja: "轉禍爲福", hangul: "전화위복", meaning: "화가 바뀌어 오히려 복이 됨.", keywords: ["위기극복", "희망", "반전"] },
+  { hanja: "朝三暮四", hangul: "조삼모사", meaning: "아침에 세 개, 저녁에 네 개라는 뜻으로, 잔꾀로 남을 속임.", keywords: ["속임수", "임기응변", "잔꾀"] },
+  { hanja: "坐不安席", hangul: "좌불안석", meaning: "앉아 있어도 자리가 편하지 않을 만큼 불안하고 초조함.", keywords: ["불안", "초조", "걱정"] },
+  { hanja: "竹馬故友", hangul: "죽마고우", meaning: "대나무 말을 타고 놀던 옛 친구라는 뜻으로, 어릴 때부터 친하게 지낸 벗.", keywords: ["우정", "친구", "어릴적"] },
+  { hanja: "指鹿爲馬", hangul: "지록위마", meaning: "사슴을 가리켜 말이라 한다는 뜻으로, 권력을 이용해 억지를 부리거나 거짓을 참으로 우김.", keywords: ["권력남용", "거짓", "억지"] },
+  { hanja: "天高馬肥", hangul: "천고마비", meaning: "하늘이 높고 말이 살찐다는 뜻으로, 풍성하고 좋은 가을철을 이르는 말.", keywords: ["가을", "계절", "풍요"] },
+  { hanja: "靑出於藍", hangul: "청출어람", meaning: "쪽에서 나온 푸른빛이 쪽보다 더 푸르다는 뜻으로, 제자가 스승보다 나음.", keywords: ["성장", "제자", "발전"] },
+  { hanja: "針小棒大", hangul: "침소봉대", meaning: "바늘만 한 것을 몽둥이만 하다고 말한다는 뜻으로, 작은 일을 크게 부풀림.", keywords: ["과장", "부풀림"] },
+  { hanja: "他山之石", hangul: "타산지석", meaning: "다른 산의 하찮은 돌도 자신의 옥을 가는 데 쓸 수 있다는 뜻으로, 남의 말이나 행동이 자신에게 교훈이 됨.", keywords: ["교훈", "본보기", "반면교사"] },
+  { hanja: "破竹之勢", hangul: "파죽지세", meaning: "대나무를 쪼개는 기세처럼 거침없이 나아가는 기세.", keywords: ["기세", "승승장구", "기운"] },
+  { hanja: "表裏不同", hangul: "표리부동", meaning: "겉으로 드러난 모습과 속마음이 다름.", keywords: ["위선", "이중성", "거짓"] },
+  { hanja: "風前燈火", hangul: "풍전등화", meaning: "바람 앞의 등불처럼 매우 위태로운 처지.", keywords: ["위기", "위태로움", "불안"] },
+  { hanja: "鶴首苦待", hangul: "학수고대", meaning: "학처럼 목을 길게 빼고 몹시 기다림.", keywords: ["기다림", "간절함", "설렘"] },
+  { hanja: "咸興差使", hangul: "함흥차사", meaning: "심부름을 가서 소식이 없거나 돌아오지 않음.", keywords: ["소식없음", "답답함", "무소식"] },
+  { hanja: "螢雪之功", hangul: "형설지공", meaning: "반딧불과 눈빛으로 글을 읽어가며 고생 속에서 공부하여 이룬 결실.", keywords: ["노력", "학업", "고생"] },
+  { hanja: "狐假虎威", hangul: "호가호위", meaning: "여우가 호랑이의 위세를 빌려 뽐낸다는 뜻으로, 남의 권세를 빌려 허세를 부림.", keywords: ["권세", "허세", "빌린힘"] },
+  { hanja: "畵龍點睛", hangul: "화룡점정", meaning: "용을 그린 뒤 마지막으로 눈동자를 찍는다는 뜻으로, 가장 중요한 부분을 완성해 일을 끝맺음.", keywords: ["완성", "마무리", "화룡점정"] },
+  { hanja: "換骨奪胎", hangul: "환골탈태", meaning: "뼈와 태를 바꾼 듯 몰라보게 달라짐.", keywords: ["변화", "발전", "탈바꿈"] },
+  { hanja: "會者定離", hangul: "회자정리", meaning: "만난 사람은 반드시 헤어지게 되어 있음.", keywords: ["이별", "인연", "만남"] },
+  { hanja: "厚顔無恥", hangul: "후안무치", meaning: "낯가죽이 두꺼워 부끄러움을 모름.", keywords: ["뻔뻔함", "몰염치", "부끄러움없음"] },
+  { hanja: "興盡悲來", hangul: "흥진비래", meaning: "즐거운 일이 다하면 슬픈 일이 옴.", keywords: ["인생무상", "화복", "허무함"] }
+];
+
+const POPULAR = ["고진감래", "새옹지마", "전화위복", "일석이조", "우공이산", "온고지신", "죽마고우", "형설지공"];
+const CHIP_WORDS = ["노력", "우정", "사랑", "위기", "성공", "인내", "효도", "배움", "걱정", "이별", "겸손", "기다림"];
+
+const chipsEl = document.getElementById("chips");
+CHIP_WORDS.forEach(word => {
+  const btn = document.createElement("button");
+  btn.className = "chip";
+  btn.textContent = word;
+  btn.onclick = () => {
+    document.getElementById("query").value = word;
+    runSearch();
+  };
+  chipsEl.appendChild(btn);
+});
+
+function scoreIdiom(idiom, query, tokens) {
+  let score = 0;
+  const matched = [];
+
+  if (query && (idiom.hangul.includes(query) || idiom.hanja.includes(query))) {
+    score += 10;
+  }
+
+  idiom.keywords.forEach(keyword => {
+    let hit = false;
+    if (query && query.includes(keyword)) hit = true;
+    tokens.forEach(token => {
+      if (token.length >= 2 && (keyword.includes(token) || token.includes(keyword))) hit = true;
+    });
+    if (hit) {
+      score += 3;
+      matched.push(keyword);
+    }
+  });
+
+  tokens.forEach(token => {
+    if (token.length >= 2 && idiom.meaning.includes(token)) score += 1;
+  });
+
+  return { score, matched };
+}
+
+function renderCards(list, highlightMap) {
+  const resultsEl = document.getElementById("results");
+  resultsEl.innerHTML = "";
+
+  if (list.length === 0) {
+    resultsEl.innerHTML = '<div class="empty">일치하는 사자성어를 찾지 못했어요. 다른 키워드로 시도해보세요.</div>';
+    return;
+  }
+
+  list.forEach(idiom => {
+    const matched = highlightMap ? (highlightMap.get(idiom) || []) : [];
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <div class="hanja">${idiom.hanja}</div>
+      <div class="hangul">${idiom.hangul}</div>
+      <div class="meaning">${idiom.meaning}</div>
+      <div class="tags">
+        ${idiom.keywords.map(k => `<span class="tag${matched.includes(k) ? " matched" : ""}">${k}</span>`).join("")}
+      </div>
+    `;
+    resultsEl.appendChild(card);
+  });
+}
+
+function showDefault() {
+  const list = IDIOMS.filter(i => POPULAR.includes(i.hangul));
+  document.getElementById("status").textContent = `인기 사자성어 ${list.length}개`;
+  renderCards(list, null);
+}
+
+function runSearch() {
+  const query = document.getElementById("query").value.trim();
+  const statusEl = document.getElementById("status");
+
+  if (!query) {
+    showDefault();
+    return;
+  }
+
+  const tokens = query.split(/[\s,.\/·~!?]+/).filter(Boolean);
+  const highlightMap = new Map();
+
+  const scored = IDIOMS.map(idiom => {
+    const { score, matched } = scoreIdiom(idiom, query, tokens);
+    if (score > 0) highlightMap.set(idiom, matched);
+    return { idiom, score };
+  })
+  .filter(entry => entry.score > 0)
+  .sort((a, b) => b.score - a.score)
+  .slice(0, 12)
+  .map(entry => entry.idiom);
+
+  statusEl.textContent = scored.length
+    ? `"${query}"에 어울리는 사자성어 ${scored.length}개를 찾았어요`
+    : `"${query}"에 어울리는 사자성어를 찾지 못했어요`;
+
+  renderCards(scored, highlightMap);
+}
+
+document.getElementById("query").addEventListener("keydown", e => {
+  if (e.key === "Enter") runSearch();
+});
+
+showDefault();
+</script>
+</body>
+</html>

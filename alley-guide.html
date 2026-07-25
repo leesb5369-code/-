@@ -138,6 +138,18 @@
       margin-top: 6px;
     }
 
+    .region-header {
+      grid-column: 1 / -1;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #1a3a5c;
+      border-left: 4px solid #1a3a5c;
+      padding-left: 10px;
+      margin-top: 14px;
+    }
+    .region-header:first-of-type { margin-top: 0; }
+    .region-header.hidden-card { display: none; }
+
     @media print {
       body { background: #fff; padding: 0; }
       .toolbar { display: none; }
@@ -163,26 +175,100 @@
 
 <div class="grid-wrap" id="cardGrid">
 
+  <h3 class="region-header" data-type="domestic">수도권 (서울·인천·경기)</h3>
+
   <div class="card" data-type="domestic">
     <span class="badge domestic">국내</span>
     <h2>익선동 한옥거리</h2>
-    <p class="location">서울특별시 종로구</p>
+    <p class="location">서울특별시 종로구 · 수도권</p>
     <p class="desc">좁은 골목 사이로 100년 넘은 한옥이 카페·레스토랑으로 재탄생한 거리. 도심 속 근대 골목 정취를 느낄 수 있다.</p>
     <p class="highlight">추천: 야간 조명, 한옥 카페 투어</p>
   </div>
 
   <div class="card" data-type="domestic">
     <span class="badge domestic">국내</span>
+    <h2>서촌 골목 (체부동·통인동)</h2>
+    <p class="location">서울특별시 종로구 · 수도권</p>
+    <p class="desc">경복궁 서쪽 좁은 골목에 갤러리, 오래된 주택, 통인시장이 공존하는 조용한 동네.</p>
+    <p class="highlight">추천: 통인시장 엽전 도시락 카페 투어</p>
+  </div>
+
+  <div class="card" data-type="domestic">
+    <span class="badge domestic">국내</span>
+    <h2>을지로 골목 (힙지로)</h2>
+    <p class="location">서울특별시 중구 · 수도권</p>
+    <p class="desc">오래된 공구상가·인쇄골목 사이로 개성 있는 바와 카페가 들어서며 뉴트로 명소가 된 골목.</p>
+    <p class="highlight">추천: 노포와 신상 바를 함께 즐기기</p>
+  </div>
+
+  <div class="card" data-type="domestic">
+    <span class="badge domestic">국내</span>
+    <h2>신포동 개항장거리</h2>
+    <p class="location">인천광역시 중구 · 수도권</p>
+    <p class="desc">개항기 이국적 건축물과 근대 골목이 어우러진 거리로, 차이나타운과도 가깝다.</p>
+    <p class="highlight">추천: 신포시장 먹거리 골목</p>
+  </div>
+
+  <div class="card" data-type="domestic">
+    <span class="badge domestic">국내</span>
+    <h2>행궁동 벽화마을</h2>
+    <p class="location">경기도 수원시 · 수도권</p>
+    <p class="desc">수원 화성 성곽 아래 자리한 마을로, 골목 곳곳에 벽화와 작은 갤러리가 있다.</p>
+    <p class="highlight">추천: 화성행궁과 함께 도보 여행</p>
+  </div>
+
+  <h3 class="region-header" data-type="domestic">강원권</h3>
+
+  <div class="card" data-type="domestic">
+    <span class="badge domestic">국내</span>
+    <h2>명주동 골목</h2>
+    <p class="location">강원특별자치도 강릉시 · 강원권</p>
+    <p class="desc">일제강점기 관아 건물과 적산가옥이 남은 강릉 원도심 골목으로, 카페거리로 재탄생했다.</p>
+    <p class="highlight">추천: 명주예술마당 골목 카페 투어</p>
+  </div>
+
+  <h3 class="region-header" data-type="domestic">충청권</h3>
+
+  <div class="card" data-type="domestic">
+    <span class="badge domestic">국내</span>
+    <h2>소제동 철도관사촌 골목</h2>
+    <p class="location">대전광역시 동구 · 충청권</p>
+    <p class="desc">대전역 인근 일제강점기 철도관사촌 골목으로, 낡은 가옥이 카페와 갤러리로 바뀌고 있다.</p>
+    <p class="highlight">추천: 소제창작촌 갤러리 산책</p>
+  </div>
+
+  <h3 class="region-header" data-type="domestic">호남권</h3>
+
+  <div class="card" data-type="domestic">
+    <span class="badge domestic">국내</span>
     <h2>전주 한옥마을 골목</h2>
-    <p class="location">전북특별자치도 전주시</p>
+    <p class="location">전북특별자치도 전주시 · 호남권</p>
     <p class="desc">700여 채의 한옥이 밀집한 골목길로, 한복 체험과 전통 공예 공방이 늘어서 있다.</p>
     <p class="highlight">추천: 한복 대여 후 골목 산책</p>
   </div>
 
   <div class="card" data-type="domestic">
     <span class="badge domestic">국내</span>
+    <h2>군산 근대골목 (신흥동·월명동)</h2>
+    <p class="location">전북특별자치도 군산시 · 호남권</p>
+    <p class="desc">일제강점기 근대 건축물과 좁은 골목이 그대로 남아 있는 시간여행 골목.</p>
+    <p class="highlight">추천: 근대역사박물관과 연계 관람</p>
+  </div>
+
+  <div class="card" data-type="domestic">
+    <span class="badge domestic">국내</span>
+    <h2>목포 근대역사문화거리</h2>
+    <p class="location">전라남도 목포시 · 호남권</p>
+    <p class="desc">옛 일본영사관과 근대 건축물이 남은 개항장 골목으로, 유달산 자락과 이어진다.</p>
+    <p class="highlight">추천: 유달산과 연계한 도보 코스</p>
+  </div>
+
+  <h3 class="region-header" data-type="domestic">영남권</h3>
+
+  <div class="card" data-type="domestic">
+    <span class="badge domestic">국내</span>
     <h2>감천문화마을</h2>
-    <p class="location">부산광역시 사하구</p>
+    <p class="location">부산광역시 사하구 · 영남권</p>
     <p class="desc">산비탈에 계단식으로 들어선 알록달록한 집들과 미로 같은 골목이 특징인 '한국의 마추픽추'.</p>
     <p class="highlight">추천: 골목 스탬프 투어, 전망대</p>
   </div>
@@ -190,57 +276,35 @@
   <div class="card" data-type="domestic">
     <span class="badge domestic">국내</span>
     <h2>동피랑 벽화마을</h2>
-    <p class="location">경상남도 통영시</p>
+    <p class="location">경상남도 통영시 · 영남권</p>
     <p class="desc">가파른 언덕 골목 담벼락마다 벽화가 그려진 마을로, 정상에서 통영항 전경을 볼 수 있다.</p>
     <p class="highlight">추천: 벽화 골목 사진 촬영</p>
   </div>
 
   <div class="card" data-type="domestic">
     <span class="badge domestic">국내</span>
-    <h2>군산 근대골목 (신흥동·월명동)</h2>
-    <p class="location">전북특별자치도 군산시</p>
-    <p class="desc">일제강점기 근대 건축물과 좁은 골목이 그대로 남아 있는 시간여행 골목.</p>
-    <p class="highlight">추천: 근대역사박물관과 연계 관람</p>
-  </div>
-
-  <div class="card" data-type="domestic">
-    <span class="badge domestic">국내</span>
     <h2>김광석 다시그리기길</h2>
-    <p class="location">대구광역시 중구</p>
+    <p class="location">대구광역시 중구 · 영남권</p>
     <p class="desc">가수 김광석을 테마로 벽화와 조형물이 늘어선 골목길. 방천시장과 이어진다.</p>
     <p class="highlight">추천: 저녁 시간대 버스킹 관람</p>
   </div>
 
   <div class="card" data-type="domestic">
     <span class="badge domestic">국내</span>
-    <h2>신포동 개항장거리</h2>
-    <p class="location">인천광역시 중구</p>
-    <p class="desc">개항기 이국적 건축물과 근대 골목이 어우러진 거리로, 차이나타운과도 가깝다.</p>
-    <p class="highlight">추천: 신포시장 먹거리 골목</p>
-  </div>
-
-  <div class="card" data-type="domestic">
-    <span class="badge domestic">국내</span>
-    <h2>을지로 골목 (힙지로)</h2>
-    <p class="location">서울특별시 중구</p>
-    <p class="desc">오래된 공구상가·인쇄골목 사이로 개성 있는 바와 카페가 들어서며 뉴트로 명소가 된 골목.</p>
-    <p class="highlight">추천: 노포와 신상 바를 함께 즐기기</p>
-  </div>
-
-  <div class="card" data-type="domestic">
-    <span class="badge domestic">국내</span>
     <h2>황리단길</h2>
-    <p class="location">경상북도 경주시</p>
+    <p class="location">경상북도 경주시 · 영남권</p>
     <p class="desc">고분과 한옥 사이로 이어진 골목에 개성 있는 카페·소품샵이 밀집한 신흥 여행지.</p>
     <p class="highlight">추천: 대릉원 야경과 골목 카페</p>
   </div>
 
+  <h3 class="region-header" data-type="domestic">제주권</h3>
+
   <div class="card" data-type="domestic">
     <span class="badge domestic">국내</span>
-    <h2>행궁동 벽화마을</h2>
-    <p class="location">경기도 수원시</p>
-    <p class="desc">수원 화성 성곽 아래 자리한 마을로, 골목 곳곳에 벽화와 작은 갤러리가 있다.</p>
-    <p class="highlight">추천: 화성행궁과 함께 도보 여행</p>
+    <h2>산지천 원도심 골목</h2>
+    <p class="location">제주특별자치도 제주시 · 제주권</p>
+    <p class="desc">제주 최초 개항지 인근 원도심 골목으로, 오래된 상점과 재래시장이 어우러진다.</p>
+    <p class="highlight">추천: 동문시장과 이어 걷기</p>
   </div>
 
   <div class="card" data-type="international">
@@ -359,6 +423,13 @@
       const matchesKeyword = keyword === '' || card.textContent.toLowerCase().includes(keyword);
       card.classList.toggle('hidden-card', !(matchesType && matchesKeyword));
     });
+
+    const headers = document.querySelectorAll('#cardGrid .region-header');
+    headers.forEach(header => {
+      const matchesType = currentFilter === 'all' || header.dataset.type === currentFilter;
+      header.classList.toggle('hidden-card', !matchesType);
+    });
+
     updateCount();
   }
 

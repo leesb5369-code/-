@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>국내·해외 골목길 탐방 가이드</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: '맑은 고딕', 'Malgun Gothic', '나눔고딕', sans-serif;
+      background: #f4f6f9;
+      color: #222;
+      padding: 24px 16px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    header h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #1a3a5c;
+      border-bottom: 3px solid #1a3a5c;
+      display: inline-block;
+      padding-bottom: 6px;
+    }
+    header p.subtitle {
+      font-size: 0.82rem;
+      color: #666;
+      margin-top: 8px;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 18px;
+      max-width: 1100px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .toolbar input[type="text"] {
+      padding: 7px 12px;
+      border: 1px solid #ccd3dc;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      width: 260px;
+      outline: none;
+    }
+    .toolbar input[type="text"]:focus { border-color: #1a3a5c; }
+
+    .filter-btn {
+      padding: 7px 16px;
+      background: #fff;
+      color: #1a3a5c;
+      border: 1px solid #1a3a5c;
+      border-radius: 6px;
+      font-size: 0.86rem;
+      cursor: pointer;
+    }
+    .filter-btn.active,
+    .filter-btn:hover {
+      background: #1a3a5c;
+      color: #fff;
+    }
+
+    .toolbar button.print-btn {
+      padding: 7px 18px;
+      background: #1a3a5c;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.88rem;
+      cursor: pointer;
+    }
+    .toolbar button.print-btn:hover { background: #26527e; }
+
+    .count-label {
+      margin-left: auto;
+      font-size: 0.82rem;
+      color: #555;
+    }
+
+    .grid-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.09);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .card.hidden-card { display: none; }
+
+    .card .badge {
+      align-self: flex-start;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      color: #fff;
+    }
+    .card .badge.domestic { background: #1a3a5c; }
+    .card .badge.international { background: #c0392b; }
+
+    .card h2 {
+      font-size: 1.05rem;
+      color: #1a3a5c;
+      margin-top: 4px;
+    }
+    .card .location {
+      font-size: 0.8rem;
+      color: #888;
+    }
+    .card .desc {
+      font-size: 0.86rem;
+      color: #444;
+      line-height: 1.5;
+      margin-top: 4px;
+    }
+    .card .highlight {
+      font-size: 0.8rem;
+      color: #1a3a5c;
+      background: #eaf2fb;
+      border-radius: 6px;
+      padding: 6px 10px;
+      margin-top: 6px;
+    }
+
+    @media print {
+      body { background: #fff; padding: 0; }
+      .toolbar { display: none; }
+      .card { box-shadow: none; border: 1px solid #ccc; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>국내·해외 골목길 탐방 가이드</h1>
+  <p class="subtitle">※ 본 자료는 여행 참고용으로 작성되었으며, 실제 방문 전 최신 운영 정보를 별도로 확인하시기 바랍니다.</p>
+</header>
+
+<div class="toolbar">
+  <input type="text" id="searchInput" placeholder="지역명·골목길 이름 검색…" oninput="filterCards()" />
+  <button class="filter-btn active" data-filter="all" onclick="setFilter('all', this)">전체</button>
+  <button class="filter-btn" data-filter="domestic" onclick="setFilter('domestic', this)">국내</button>
+  <button class="filter-btn" data-filter="international" onclick="setFilter('international', this)">해외</button>
+  <button class="print-btn" onclick="window.print()">인쇄</button>
+  <span class="count-label" id="countLabel"></span>
+</div>
+
+<div class="grid-wrap" id="cardGrid">
+
+  <div class="card" data-type="domestic">
+    <span class="badge domestic">국내</span>
+    <h2>익선동 한옥거리</h2>
+    <p class="location">서울특별시 종로구</p>
+    <p class="desc">좁은 골목 사이로 100년 넘은 한옥이 카페·레스토랑으로 재탄생한 거리. 도심 속 근대 골목 정취를 느낄 수 있다.</p>
+    <p class="highlight">추천: 야간 조명, 한옥 카페 투어</p>
+  </div>
+
+  <div class="card" data-type="domestic">
+    <span class="badge domestic">국내</span>
+    <h2>전주 한옥마을 골목</h2>
+    <p class="location">전북특별자치도 전주시</p>
+    <p class="desc">700여 채의 한옥이 밀집한 골목길로, 한복 체험과 전통 공예 공방이 늘어서 있다.</p>
+    <p class="highlight">추천: 한복 대여 후 골목 산책</p>
+  </div>
+
+  <div class="card" data-type="domestic">
+    <span class="badge domestic">국내</span>
+    <h2>감천문화마을</h2>
+    <p class="location">부산광역시 사하구</p>
+    <p class="desc">산비탈에 계단식으로 들어선 알록달록한 집들과 미로 같은 골목이 특징인 '한국의 마추픽추'.</p>
+    <p class="highlight">추천: 골목 스탬프 투어, 전망대</p>
+  </div>
+
+  <div class="card" data-type="domestic">
+    <span class="badge domestic">국내</span>
+    <h2>동피랑 벽화마을</h2>
+    <p class="location">경상남도 통영시</p>
+    <p class="desc">가파른 언덕 골목 담벼락마다 벽화가 그려진 마을로, 정상에서 통영항 전경을 볼 수 있다.</p>
+    <p class="highlight">추천: 벽화 골목 사진 촬영</p>
+  </div>
+
+  <div class="card" data-type="domestic">
+    <span class="badge domestic">국내</span>
+    <h2>군산 근대골목 (신흥동·월명동)</h2>
+    <p class="location">전북특별자치도 군산시</p>
+    <p class="desc">일제강점기 근대 건축물과 좁은 골목이 그대로 남아 있는 시간여행 골목.</p>
+    <p class="highlight">추천: 근대역사박물관과 연계 관람</p>
+  </div>
+
+  <div class="card" data-type="domestic">
+    <span class="badge domestic">국내</span>
+    <h2>김광석 다시그리기길</h2>
+    <p class="location">대구광역시 중구</p>
+    <p class="desc">가수 김광석을 테마로 벽화와 조형물이 늘어선 골목길. 방천시장과 이어진다.</p>
+    <p class="highlight">추천: 저녁 시간대 버스킹 관람</p>
+  </div>
+
+  <div class="card" data-type="domestic">
+    <span class="badge domestic">국내</span>
+    <h2>신포동 개항장거리</h2>
+    <p class="location">인천광역시 중구</p>
+    <p class="desc">개항기 이국적 건축물과 근대 골목이 어우러진 거리로, 차이나타운과도 가깝다.</p>
+    <p class="highlight">추천: 신포시장 먹거리 골목</p>
+  </div>
+
+  <div class="card" data-type="domestic">
+    <span class="badge domestic">국내</span>
+    <h2>을지로 골목 (힙지로)</h2>
+    <p class="location">서울특별시 중구</p>
+    <p class="desc">오래된 공구상가·인쇄골목 사이로 개성 있는 바와 카페가 들어서며 뉴트로 명소가 된 골목.</p>
+    <p class="highlight">추천: 노포와 신상 바를 함께 즐기기</p>
+  </div>
+
+  <div class="card" data-type="domestic">
+    <span class="badge domestic">국내</span>
+    <h2>황리단길</h2>
+    <p class="location">경상북도 경주시</p>
+    <p class="desc">고분과 한옥 사이로 이어진 골목에 개성 있는 카페·소품샵이 밀집한 신흥 여행지.</p>
+    <p class="highlight">추천: 대릉원 야경과 골목 카페</p>
+  </div>
+
+  <div class="card" data-type="domestic">
+    <span class="badge domestic">국내</span>
+    <h2>행궁동 벽화마을</h2>
+    <p class="location">경기도 수원시</p>
+    <p class="desc">수원 화성 성곽 아래 자리한 마을로, 골목 곳곳에 벽화와 작은 갤러리가 있다.</p>
+    <p class="highlight">추천: 화성행궁과 함께 도보 여행</p>
+  </div>
+
+  <div class="card" data-type="international">
+    <span class="badge international">해외</span>
+    <h2>알파마 지구</h2>
+    <p class="location">포르투갈 리스본</p>
+    <p class="desc">리스본에서 가장 오래된 구역으로, 언덕을 따라 미로처럼 얽힌 좁은 골목과 파두 선율이 흐른다.</p>
+    <p class="highlight">추천: 28번 트램 타고 골목 탐방</p>
+  </div>
+
+  <div class="card" data-type="international">
+    <span class="badge international">해외</span>
+    <h2>야네센 (谷根千)</h2>
+    <p class="location">일본 도쿄</p>
+    <p class="desc">야나카·네즈·센다기 일대의 옛 정취가 남은 골목으로, 도쿄 대공습을 피한 전통 건물이 많다.</p>
+    <p class="highlight">추천: 야나카 긴자 상점가 산책</p>
+  </div>
+
+  <div class="card" data-type="international">
+    <span class="badge international">해외</span>
+    <h2>기온 하나미코지 거리</h2>
+    <p class="location">일본 교토</p>
+    <p class="desc">전통 목조 가옥이 늘어선 골목으로, 운이 좋으면 게이샤·마이코를 만날 수 있는 교토 대표 거리.</p>
+    <p class="highlight">추천: 이른 아침 한적한 시간대 방문</p>
+  </div>
+
+  <div class="card" data-type="international">
+    <span class="badge international">해외</span>
+    <h2>몽마르트르 골목</h2>
+    <p class="location">프랑스 파리</p>
+    <p class="desc">사크레쾨르 대성당 아래 언덕 골목으로, 거리 화가와 카페가 즐비한 예술가들의 동네.</p>
+    <p class="highlight">추천: 계단 골목 따라 일출 감상</p>
+  </div>
+
+  <div class="card" data-type="international">
+    <span class="badge international">해외</span>
+    <h2>베네치아 골목 (칼레)</h2>
+    <p class="location">이탈리아 베네치아</p>
+    <p class="desc">운하 사이사이로 이어진 좁은 보행 골목 '칼레'가 미로처럼 도시 전체를 연결한다.</p>
+    <p class="highlight">추천: 지도 없이 길을 잃어보기</p>
+  </div>
+
+  <div class="card" data-type="international">
+    <span class="badge international">해외</span>
+    <h2>발라트 지구</h2>
+    <p class="location">튀르키예 이스탄불</p>
+    <p class="desc">파스텔톤 목조 주택이 늘어선 언덕 골목으로, 앤티크 숍과 벽화가 가득한 이스탄불의 숨은 명소.</p>
+    <p class="highlight">추천: 컬러풀 계단 사진 스팟</p>
+  </div>
+
+  <div class="card" data-type="international">
+    <span class="badge international">해외</span>
+    <h2>톈쯔팡</h2>
+    <p class="location">중국 상하이</p>
+    <p class="desc">1930년대 스쿠먼(石庫門) 주택가를 개조한 골목으로, 갤러리와 공방이 밀집해 있다.</p>
+    <p class="highlight">추천: 좁은 골목 사이 소품샵 구경</p>
+  </div>
+
+  <div class="card" data-type="international">
+    <span class="badge international">해외</span>
+    <h2>하지레인</h2>
+    <p class="location">싱가포르</p>
+    <p class="desc">아랍 스트리트 인근의 컬러풀한 골목으로, 빈티지 숍과 벽화 카페가 모여 있다.</p>
+    <p class="highlight">추천: 벽화 골목 야경 산책</p>
+  </div>
+
+  <div class="card" data-type="international">
+    <span class="badge international">해외</span>
+    <h2>코요아칸</h2>
+    <p class="location">멕시코 멕시코시티</p>
+    <p class="desc">화가 프리다 칼로가 살던 동네로, 파스텔톤 골목과 전통 시장이 어우러진 예술가 마을.</p>
+    <p class="highlight">추천: 프리다 칼로 박물관 연계 방문</p>
+  </div>
+
+  <div class="card" data-type="international">
+    <span class="badge international">해외</span>
+    <h2>프라하 구시가 골목</h2>
+    <p class="location">체코 프라하</p>
+    <p class="desc">중세 건축물 사이로 이어진 자갈길 골목으로, 골목 끝마다 광장과 성당이 나타난다.</p>
+    <p class="highlight">추천: 해질녘 카를교 방향 골목 산책</p>
+  </div>
+
+  <div class="card" data-type="international">
+    <span class="badge international">해외</span>
+    <h2>할리우드 로드·PMQ</h2>
+    <p class="location">중국 홍콩</p>
+    <p class="desc">골동품 상점과 계단식 골목이 이어진 지역으로, 옛 경찰숙소를 개조한 디자인 스팟 PMQ가 있다.</p>
+    <p class="highlight">추천: 만모사원과 함께 도보 코스</p>
+  </div>
+
+  <div class="card" data-type="international">
+    <span class="badge international">해외</span>
+    <h2>하바나 올드타운</h2>
+    <p class="location">쿠바 아바나</p>
+    <p class="desc">스페인 식민지 시절 건축물이 빛바랜 색채로 남아 있는 골목으로, 클래식카와 라이브 음악이 흐른다.</p>
+    <p class="highlight">추천: 골목 재즈바에서 휴식</p>
+  </div>
+
+</div>
+
+<script>
+  let currentFilter = 'all';
+
+  function setFilter(type, btn) {
+    currentFilter = type;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    filterCards();
+  }
+
+  function filterCards() {
+    const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
+    const cards = document.querySelectorAll('#cardGrid .card');
+    cards.forEach(card => {
+      const matchesType = currentFilter === 'all' || card.dataset.type === currentFilter;
+      const matchesKeyword = keyword === '' || card.textContent.toLowerCase().includes(keyword);
+      card.classList.toggle('hidden-card', !(matchesType && matchesKeyword));
+    });
+    updateCount();
+  }
+
+  function updateCount() {
+    const total = document.querySelectorAll('#cardGrid .card').length;
+    const visible = document.querySelectorAll('#cardGrid .card:not(.hidden-card)').length;
+    document.getElementById('countLabel').textContent = `표시: ${visible} / 전체: ${total}곳`;
+  }
+
+  updateCount();
+</script>
+
+</body>
+</html>
